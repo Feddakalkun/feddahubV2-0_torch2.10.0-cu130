@@ -195,14 +195,21 @@ if (-not $Unattended) {
     Clear-Host
 }
 
-Write-Host ""
-Write-Host "  ========================================================" -ForegroundColor Cyan
-Write-Host "                                                          " -ForegroundColor Cyan
-Write-Host "         FEDDAKALKUN MAIN INSTALLER" -ForegroundColor Cyan
-Write-Host "         Uses embedded Python + system Git/Node" -ForegroundColor Cyan
-Write-Host "                                                          " -ForegroundColor Cyan
-Write-Host "  ========================================================" -ForegroundColor Cyan
-Write-Host ""
+# The outer FEDDA_v2.0_Installer.bat already showed the welcome, the notice
+# and the machine check before handing off here unattended. A second full
+# banner just resets the look mid-flow (Gemini's "batch calling a batch"), so
+# the big banner is standalone-only; unattended drops straight into the step
+# output the wrapper already framed.
+if (-not $Unattended) {
+    Write-Host ""
+    Write-Host "  ========================================================" -ForegroundColor Cyan
+    Write-Host "                                                          " -ForegroundColor Cyan
+    Write-Host "         FEDDAKALKUN MAIN INSTALLER" -ForegroundColor Cyan
+    Write-Host "         Uses embedded Python + system Git/Node" -ForegroundColor Cyan
+    Write-Host "                                                          " -ForegroundColor Cyan
+    Write-Host "  ========================================================" -ForegroundColor Cyan
+    Write-Host ""
+}
 
 if ($Unattended) {
     Write-Host "  Unattended install - progress below, no input required." -ForegroundColor Gray
