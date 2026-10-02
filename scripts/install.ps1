@@ -459,7 +459,7 @@ if (-not (Test-Path $PyEmbedExe)) {
         Write-Step "Installing pip into embedded Python..." "Yellow"
         $GetPip = Join-Path $RootPath "get-pip.py"
         & curl.exe -L -o "$GetPip" "https://bootstrap.pypa.io/get-pip.py" --retry 3 --retry-delay 2
-        & $PyEmbedExe $GetPip
+        & $PyEmbedExe $GetPip --no-warn-script-location
         Remove-Item $GetPip -Force
 
         Write-Step "Python 3.11.9 embedded and configured." "Green"

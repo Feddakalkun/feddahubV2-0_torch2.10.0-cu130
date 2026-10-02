@@ -7,6 +7,13 @@ if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
 for %%I in ("%SCRIPT_DIR%\..") do set "BASE_DIR=%%~fI"
 cd /d "%BASE_DIR%"
 
+:: When the outer FEDDA_v2.0_Installer.bat launches this (FEDDA_UNATTENDED=1), it
+:: has already shown the welcome, requirements and preflight. Printing a second
+:: full banner and system scan here just resets the look mid-flow and repeats
+:: checks the user has already seen, so stay quiet and let the outer installer
+:: frame this step. Standalone runs still get the full banner below.
+if "%FEDDA_UNATTENDED%"=="1" goto SYSTEM_SCAN
+
 echo.
 echo ============================================================================
 echo   FEDDAKALKUN INSTALLER
@@ -14,6 +21,8 @@ echo ===========================================================================
 echo.
 echo   Scanning your system...
 echo.
+
+:SYSTEM_SCAN
 
 :: ============================================================================
 :: SYSTEM SCAN
@@ -30,10 +39,12 @@ for /f "usebackq tokens=*" %%g in ("%TEMP%\_fedda_gpu.tmp") do (
     )
 )
 del "%TEMP%\_fedda_gpu.tmp" >nul 2>nul
-if "!GPU_OK!"=="1" (
-    echo   GPU:      !GPU_NAME!
-) else (
-    echo   GPU:      No NVIDIA GPU found
+if not "%FEDDA_UNATTENDED%"=="1" (
+    if "!GPU_OK!"=="1" (
+        echo   GPU:      !GPU_NAME!
+    ) else (
+        echo   GPU:      No NVIDIA GPU found
+    )
 )
 
 :: Check for system Python + parse version
@@ -86,6 +97,7 @@ if %errorlevel% equ 0 (
     set "HAS_OLLAMA=1"
 )
 
+if "%FEDDA_UNATTENDED%"=="1" goto AFTER_TOOLS_SUMMARY
 echo.
 echo   System Tools Found:
 if "%HAS_PYTHON%"=="1" (
@@ -115,6 +127,8 @@ if "%HAS_OLLAMA%"=="1" (
 )
 
 echo   Main install uses embedded Python + system Git/Node/npm where available.
+
+:AFTER_TOOLS_SUMMARY
 
 :: ============================================================================
 :: CHECK IF ALREADY INSTALLED
@@ -162,9 +176,11 @@ set "SCRIPT_DIR=%~dp0"
 if "!SCRIPT_DIR:~-1!"=="\" set "SCRIPT_DIR=!SCRIPT_DIR:~0,-1!"
 cd /d "!BASE_DIR!"
 
-echo.
-echo   Starting Main Install...
-echo.
+if not "%FEDDA_UNATTENDED%"=="1" (
+    echo.
+    echo   Starting Main Install...
+    echo.
+)
 
 if "%FEDDA_UNATTENDED%"=="1" (
     powershell -ExecutionPolicy Bypass -File "%SCRIPT_DIR%\install.ps1" -Unattended
@@ -186,6 +202,10 @@ goto :done
 :: DONE
 :: ============================================================================
 :done
+:: Under the outer installer (unattended) the wrapper prints the final ALL DONE
+:: screen and folds the report into log.md, so a second COMPLETE banner here is
+:: just another identity reset. Exit quietly and let the outer finish the story.
+if "%FEDDA_UNATTENDED%"=="1" exit /b 0
 echo.
 echo ============================================================================
 echo   INSTALLATION COMPLETE!

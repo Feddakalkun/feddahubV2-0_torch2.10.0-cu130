@@ -304,15 +304,15 @@ echo   ============================================================
 echo.
 echo   The installer will now:
 echo     - Download the app source from GitHub
-echo     - Set up an embedded Python + ComfyUI
-echo     - Install the required custom nodes and dependencies
+echo     - Set up an embedded Python, ComfyUI and PyTorch
+echo     - Install the core custom nodes and dependencies
 echo     - Build the FEDDA frontend
 echo.
 echo   Good to know:
-echo     - This can take 30-60 minutes on a first run
-echo     - It needs a stable internet connection
-echo     - Plan for a good amount of free disk space for models
-echo     - A recent NVIDIA GPU is strongly recommended
+echo     - Core setup is quick; PyTorch is the big download
+echo     - Each workflow fetches its own models on first use
+echo     - You need stable internet and room for those models
+echo     - A recent NVIDIA RTX GPU is strongly recommended
 echo.
 echo   No further input is required once it starts.
 echo.
